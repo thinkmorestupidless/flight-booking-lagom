@@ -1,0 +1,158 @@
+lagomAuction=Lagom Auction
+logInAs=Log in as...
+search=Search
+
+formErrors=There are some errors in your form.
+
+name=Name
+email=Email
+password=Password
+confirmPassword=Confirm Password
+createUser=Create user
+
+title=Title
+description=Description
+currency=Currency
+category=Category
+increment=Minimum bid increment
+incrementHelp=When someone makes a bid, their bid must be at least this much more than the current winning bid.
+reserve=Reserve price
+reserveHelp=The reserve is the minimum price that the auction must reach in order for the item to be won by someone.
+auctionStatus=Auction status
+duration=Auction duration
+durationUnits=Units
+createItem=Create item
+editItem=Edit
+saveItem=Save
+searchItems=Search Items
+
+keywords=Exact terms:
+maximumPrice=Maximum Price (set to '0' to disable filter)
+maximumPriceCurrency=
+searchFoundCount={0} items found
+searchFoundCountWithPagination=Displaying {0} of {1} items found
+
+seller=Seller
+auctionStart=Auction start
+auctionEnd=Auction end
+currentPrice=Current price
+finalPrice=Final price
+auctionWinner=Auction winner
+startAuction=Start auction
+
+bidAcceptedMessage=Congratulations! Your bid has been accepted, and you are the highest bidder, with a current price of {0}.
+bidAcceptedOutbidMessage=Your bid has been accepted, however you have been outbid by another bidder. The current price is {0}.
+bidAcceptedBelowReserveMessage=Your bid has been accepted, however it is below the reserve price for this auction. The current price is {0}.
+bidTooLowMessage=Your bid was not at least the increment above the current price of {0}.
+bidNotStartedMessage=The auction has not started.
+bidFinishedMessage=The auction has already finished.
+bidCancelledMessage=The auction has been cancelled.
+
+bid=Bid price
+placeBid=Place bid
+currentWinningBidderMessage=You are the current highest bidder, with a maximum bid of {0}. You can change your maximum bid by placing another bid, \
+  either up or down to the current bid price.
+
+biddingHistory=Bidding history
+noBidsPlaced=No bids placed
+
+bidTime=Bid time
+bidder=Bidder
+youBidder=you
+anonymousBidder=Bidder {0}
+
+durationSeconds={0,choice, 1#1 second|1<{0,number} seconds}
+durationMinutes={0,choice, 1#1 minute|1<{0,number} minutes}
+durationHours={0,choice, 1#1 hour|1<{0,number} hours}
+durationDays={0,choice, 1#1 day|1<{0,number} days}
+durationWeeks={0,choice, 1#1 week|1<{0,number} weeks}
+
+noItems.CREATED=No items awaiting auction
+items.CREATED=Awaiting auction
+noItems.AUCTION=No items under auction
+items.AUCTION=Under auction
+noItems.COMPLETED=No completed auctions
+items.COMPLETED=Completed auctions
+noItems.CANCELLED=No cancelled auctions
+items.CANCELLED=Cancelled auctions
+items.caption={0} ({1})
+
+pagination.prev=Previous
+pagination.next=Next
+
+invalid.step=Please put valid step
+invalid.increment=Please put a valid increment
+invalid.currency=Please enter a valid currency
+invalid.reserve=Please enter a valid reserve
+invalid.duration=Please enter a valid duration
+invalid.units=Please enter a valid unit
+
+instruction.createUser=Here you can create a new user who can participate in and create auctions.
+
+instruction.itemMessage=Click on an item to view/edit its details.
+instruction.editItem=Here you can edit details of your auction item. If the auction has not started, you can edit any detail including description, minimum bid increment, auction duration, etc. However, if the auction is on-going, only the item description can be edited.
+
+instruction.createItem=Here you can create new items to auction.
+instruction.placeBid=Here you can place a bid for item under auction.
+instruction.seller=Here you can start the auction of the item.
+instruction.auctionStarted.bidder=The auction has started for this item.
+instruction.auctionStarted.seller=This item is under auction. Now other users can start bidding for this item.
+instruction.auctionEnded=The auction has ended for this item.
+instruction.auctionCancelled=The auction has been cancelled for this item.
+
+instruction.search=Here you can search for auctioned items. You can filter your search by specifying the maximum price of items to search for and the currency to search in.
+instruction.enableSearch=Search functionality can be enabled by downloading and running a local instance of elasticsearch. Steps for doing this can be found in {0}. If the lagom system is up and running, you don''t need to restart the system after installing and running elasticsearch; the search service becomes functional once it starts.
+
+instruction.deliveryDetails=Here you can view/submit the delivery details for the transaction
+instruction.deliveryPrice=Here you can view/submit the delivery price for the transaction
+instruction.transactionInfo=Here you can see all transaction details
+instruction.transactionsMessage=Click on a transaction to view/edit its details.
+
+transactionInfo=Transaction information
+aboutItem=About item
+aboutGeneral=General information
+viewDeliveryDetails=View delivery details
+editDeliveryDetails=Edit delivery details
+deliveryDetails=Delivery Details
+submitDeliveryDetails=Submit
+addressLine1=Address Line 1
+addressLine2=Address Line 2
+city=City
+state=State
+postalCode=Postal code
+country=Country
+
+noTransactions.NEGOTIATING_DELIVERY=No transactions in negotiation
+transactions.NEGOTIATING_DELIVERY=Negotiating delivery
+noTransactions.PAYMENT_PENDING=No transaction waiting payment
+transactions.PAYMENT_PENDING=Payment pending
+noTransactions.PAYMENT_SUBMITTED=No transactions with payment submitted
+transactions.PAYMENT_SUBMITTED=Payment submitted
+noTransactions.PAYMENT_FAILED=No transactions with payment failed
+transactions.PAYMENT_FAILED=Payment failed
+noTransactions.PAYMENT_CONFIRMED=No transactions with payment confirmed
+transactions.PAYMENT_CONFIRMED=Payment confirmed
+noTransactions.ITEM_DISPATCHED=No transactions with item dispatched
+transactions.ITEM_DISPATCHED=Item dispatched
+noTransactions.ITEM_RECEIVED=No transactions with item received
+transactions.ITEM_RECEIVED=Item received
+noTransactions.CANCELLED=No cancelled transactions
+transactions.CANCELLED=Cancelled transactions
+noTransactions.REFUNDING=No transactions in refunding
+transactions.REFUNDING=Transactions in refunding
+noTransactions.REFUNDED=No transactions refunded
+transactions.REFUNDED=Transactions refunded
+transactions.caption={0} ({1})
+
+itemTitle=Item title
+transactionStatus=Transaction status
+im=I''m the ...
+itemPrice=Item price
+buyer=Buyer
+
+deliveryPrice=Delivery price
+viewDeliveryPrice=View delivery price
+editDeliveryPrice=Edit delivery price
+
+approveDelivery=Approve delivery details
+waitingApprovement=Waiting for approvement from seller

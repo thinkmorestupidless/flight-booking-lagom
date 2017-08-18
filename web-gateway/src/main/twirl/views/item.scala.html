@@ -1,0 +1,175 @@
+@import com.example.auction.item.api.Item
+@import com.example.auction.item.api.ItemStatus
+@import com.example.auction.user.api.User
+@import com.example.auction.bidding.api.BidResult
+@import com.example.auction.bidding.api.BidResultStatus._
+@import java.util._
+
+@import controllers.{Currency => Currencies}
+
+@(showInlineInstruction: Boolean, item: Item, bidForm: Form[BidForm], biddingHistory: List[AnonymousBid], currentUser: UUID, currency: Currencies, seller: User, winner: Optional[User], currentMaximumBid: Optional[Integer], bidResult: Optional[BidResult])(implicit nav: Nav)
+
+@renderBidResult(icon: String, callout: String, bidMessage: String) = {
+    <div class="@callout callout">
+        <i class="fi-@icon"></i> @message(bidMessage, currency.format(bidResult.get().getCurrentPrice))
+    </div>
+}
+
+@main(item.getItemData.getTitle) {
+
+    <div >
+        <h1>@item.getItemData.getTitle</h1>
+        @if(showInlineInstruction == true) {
+            @if(currentUser == item.getCreator ){
+                @if(item.getStatus == ItemStatus.AUCTION){
+                    <p>@message("instruction.auctionStarted.seller")</p>
+                }
+                @if(item.getStatus == ItemStatus.CREATED){
+                    <p>@message("instruction.seller")</p>
+                }
+            }else{
+                @if(item.getStatus == ItemStatus.AUCTION){
+                    <p>@message("instruction.auctionStarted.bidder")</p>
+                }
+            }
+
+            @if(item.getStatus == ItemStatus.COMPLETED){
+                <p>@message("instruction.auctionEnded")</p>
+            }
+            @if(item.getStatus == ItemStatus.CANCELLED){
+                <p>@message("instruction.auctionCancelled")</p>
+            }
+        }
+    </div>
+
+    @if(currentUser == item.getCreator &&(item.getStatus == ItemStatus.CREATED || item.getStatus == ItemStatus.AUCTION )){
+        <a href="@routes.ItemController.editItemForm(item.getId.toString)" class="edit" >@message("editItem")</a>
+    }
+
+
+    @if(bidResult.isPresent) {
+
+        @bidResult.get().getStatus match {
+            case ACCEPTED => {
+                @renderBidResult("like", "success", "bidAcceptedMessage")
+            }
+            case ACCEPTED_OUTBID => {
+                @renderBidResult("dislike", "warning", "bidAcceptedOutbidMessage")
+            }
+            case ACCEPTED_BELOW_RESERVE => {
+                @renderBidResult("dislike", "warning", "bidAcceptedBelowReserveMessage")
+            }
+            case TOO_LOW => {
+                @renderBidResult("alert", "alert", "bidTooLowMessage")
+            }
+            case NOT_STARTED => {
+                @renderBidResult("alert", "alert", "bidNotStartedMessage")
+            }
+            case FINISHED => {
+                @renderBidResult("alert", "alert", "bidFinishedMessage")
+            }
+            case CANCELLED => {
+                @renderBidResult("alert", "alert", "bidCancelledMessage")
+            }
+        }
+    }
+
+    <p>
+        @item.getItemData.getDescription
+    </p>
+
+    <dl>
+        <dt>@message("seller")</dt>
+        <dd>@seller.getName</dd>
+
+        <dt>@message("currency")</dt>
+        <dd>@currency.getDisplayName</dd>
+
+        <dt>@message("increment")</dt>
+        <dd>@currency.format(item.getItemData.getIncrement)</dd>
+
+    @if(currentUser == item.getCreator) {
+        <dt>@message("reserve")</dt>
+        <dd>@currency.format(item.getItemData.getReservePrice)</dd>
+    }
+
+        <dt>@message("duration")</dt>
+        <dd>@nav.formatDuration(item.getItemData.getAuctionDuration)</dd>
+
+    @if(item.getStatus == ItemStatus.AUCTION || item.getStatus == ItemStatus.COMPLETED) {
+        <dt>@message("auctionStart")</dt>
+        <dd>@nav.formatInstant(item.getAuctionStart.get)</dd>
+
+        <dt>@message("auctionEnd")</dt>
+        <dd>@nav.formatInstant(item.getAuctionEnd.get)</dd>
+    }
+
+    @if(item.getStatus == ItemStatus.AUCTION) {
+        <dt>@message("currentPrice")</dt>
+        <dd>@currency.format(item.getPrice)</dd>
+    }
+
+    @if(item.getStatus == ItemStatus.COMPLETED) {
+        <dt>@message("finalPrice")</dt>
+        <dd>@currency.format(item.getPrice)</dd>
+
+        @if(winner.isPresent && (currentUser == item.getCreator || currentUser == winner.get.getId)) {
+            <dt>@message("auctionWinner")</dt>
+            <dd>@winner.get.getName</dd>
+        }
+    }
+    </dl>
+
+    @if(currentUser == item.getCreator && item.getStatus == ItemStatus.CREATED) {
+        <form action="@routes.ItemController.startAuction(item.getId.toString)" method="POST">
+            <input class="button success" type="submit" value="@message("startAuction")"/>
+        </form>
+    }
+
+    @if(currentUser != item.getCreator && item.getStatus == ItemStatus.AUCTION) {
+        <h3>@message("placeBid")</h3>
+        <p>@message("instruction.placeBid")</p>
+        @if(currentMaximumBid.isPresent) {
+            <div class="success callout">
+                @message("currentWinningBidderMessage", currency.format(currentMaximumBid.get()))
+            </div>
+        }
+        @foundationForm(bidForm, routes.ItemController.placeBid(item.getId.toString)) {
+            @helper.inputText(bidForm("bid"), 'type -> "number", 'step -> currency.formatDecimal(item.getItemData.getIncrement),
+                'min -> currency.formatDecimal(item.getPrice + item.getItemData.getIncrement))
+            <input type="hidden" name="currency" value="@item.getItemData.getCurrencyId"/>
+            <input class="button success" type="submit" value="@message("placeBid")"/>
+        }
+    }
+
+    @if(item.getStatus == ItemStatus.AUCTION || item.getStatus == ItemStatus.COMPLETED) {
+        <h3>@message("biddingHistory")</h3>
+        @if(biddingHistory.isEmpty) {
+            <em>@message("noBidsPlaced")</em>
+        } else {
+            <table>
+                <thead>
+                    <tr>
+                        <th>@message("bidTime")</th>
+                        <th>@message("bidder")</th>
+                        <th>@message("bid")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(bid <- biddingHistory) {
+                    <tr>
+                        <td>@nav.formatInstant(bid.getBidTime)</td>
+                        <td>@if(bid.isYou) {
+                            <strong>@message("youBidder")</strong>
+                        } else {
+                            @message("anonymousBidder", bid.getBidder)
+                        }</td>
+                        <td>@currency.format(bid.getBidPrice)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+        }
+    }
+}
