@@ -44,7 +44,7 @@ public class FlightEntityTest {
    * CloseFlight
    *
    */
-  @Test
+//  @Test
   public void happyFace() {
     PersistentEntityTestDriver<FlightCommand, FlightEvent, FlightState> driver = new PersistentEntityTestDriver<>(system, new FlightEntity(), "world-1");
 

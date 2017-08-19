@@ -44,8 +44,8 @@ public class FlightServiceImpl implements FlightService {
   @Override
   public ServiceCall<Passenger, Done> addPassenger() {
     return passenger -> {
-      AddPassenger add = new AddPassenger(UUID.randomUUID().toString(), passenger.firstName, passenger.lastName, passenger.initial, passenger.seatAssignment);
-      return newEntityRef().ask(add);
+      PersistentEntityRef<FlightCommand> ref = persistentEntityRegistry.refFor(FlightEntity.class, passenger.flightId.toString());
+      return ref.ask(new AddPassenger(UUID.randomUUID().toString(), passenger.firstName, passenger.lastName, passenger.initial, passenger.seatAssignment));
     };
   }
 
