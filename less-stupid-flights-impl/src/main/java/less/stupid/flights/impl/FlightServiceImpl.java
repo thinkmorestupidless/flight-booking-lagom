@@ -42,7 +42,7 @@ public class FlightServiceImpl implements FlightService {
   }
 
   @Override
-  public ServiceCall<Passenger, FlightReply> addPassenger() {
+  public ServiceCall<Passenger, Done> addPassenger() {
     return passenger -> {
       AddPassenger add = new AddPassenger(UUID.randomUUID().toString(), passenger.firstName, passenger.lastName, passenger.initial, passenger.seatAssignment);
       return newEntityRef().ask(add);
@@ -69,7 +69,7 @@ public class FlightServiceImpl implements FlightService {
   public ServiceCall<NotUsed, Done> closeFlight(UUID flightId) {
     return request -> {
       PersistentEntityRef<FlightCommand> ref = persistentEntityRegistry.refFor(FlightEntity.class, flightId.toString());
-      return ref.ask(new FlightCommand.CloseFlight());
+      return ref.ask(new FlightCommand.CloseFlight(flightId.toString()));
     };
   }
 }

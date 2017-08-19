@@ -32,7 +32,7 @@ public interface FlightService extends Service {
    */
   ServiceCall<Flight, FlightReply> addFlight();
 
-  ServiceCall<Passenger, FlightReply> addPassenger();
+  ServiceCall<Passenger, Done> addPassenger();
 
   ServiceCall<SelectSeat, Done> selectSeat();
 

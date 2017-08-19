@@ -49,7 +49,7 @@ public interface FlightCommand extends Jsonable {
 
   @Value
   @JsonDeserialize
-  final class AddPassenger implements FlightCommand, PersistentEntity.ReplyType<FlightReply> {
+  final class AddPassenger implements FlightCommand, PersistentEntity.ReplyType<Done> {
 
     public final String passengerId;
 
@@ -102,6 +102,12 @@ public interface FlightCommand extends Jsonable {
   @JsonDeserialize
   final class CloseFlight implements FlightCommand, PersistentEntity.ReplyType<Done> {
 
+    public final String flightId;
+
+    @JsonCreator
+    public CloseFlight(String flightId) {
+      this.flightId = flightId;
+    }
   }
 
 }

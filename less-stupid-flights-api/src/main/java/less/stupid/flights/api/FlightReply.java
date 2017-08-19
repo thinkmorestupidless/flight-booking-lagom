@@ -7,10 +7,11 @@ import lombok.Value;
 @Value
 @JsonDeserialize
 public class FlightReply {
-    public final String reply;
+
+    public final String flightId;
 
     @JsonCreator
-    public FlightReply(String reply) {
-        this.reply = reply;
+    public FlightReply(String flightId) {
+        this.flightId = flightId;
     }
 }

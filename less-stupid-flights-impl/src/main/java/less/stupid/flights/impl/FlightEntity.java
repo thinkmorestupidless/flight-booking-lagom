@@ -29,7 +29,7 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
       // The flight data is persisted...
       ctx.thenPersist(new FlightEvent.FlightAdded(entityId(), cmd.callsign, cmd.equipment, cmd.departureIata, cmd.arrivalIata),
         // When persist is complete we reply...
-        evt -> ctx.reply(new FlightReply(String.format("OK:%s", entityId())))));
+        evt -> ctx.reply(new FlightReply(entityId()))));
 
     // When a flight is completely added...
     b.setEventHandler(FlightEvent.FlightAdded.class,
@@ -51,7 +51,7 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
       // The passenger data is persisted...
       ctx.thenPersist(new FlightEvent.PassengerAdded(entityId(), cmd.passengerId, cmd.lastName, cmd.firstName, cmd.initial, cmd.seatAssignment),
         // When persist is complete we reply...
-        evt -> ctx.reply(new FlightReply(String.format("OK:%s", cmd.passengerId)))));
+        evt -> ctx.reply(Done.getInstance())));
 
     b.setEventHandler(FlightEvent.PassengerAdded.class,
       evt -> state().withPassenger(new Passenger(evt.passengerId, evt.lastName, evt.firstName, evt.initial, evt.seatAssignment)));
