@@ -20,7 +20,7 @@ import static com.lightbend.lagom.javadsl.testkit.ServiceTest.withServer;
 
 public class FlightServiceTest {
 
-  @Test
+//  @Test
   public void shouldStorePersonalizedGreeting() throws Exception {
     withServer(defaultSetup().withCassandra(true), server -> {
       FlightService service = server.client(FlightService.class);
@@ -38,5 +38,4 @@ public class FlightServiceTest {
       assertThat(addPassengerResponse).isNotNull();
     });
   }
-
 }

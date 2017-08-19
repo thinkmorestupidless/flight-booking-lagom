@@ -32,13 +32,9 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
         evt -> ctx.reply(new FlightReply(entityId()))));
 
     // When a flight is completely added...
-    b.setEventHandler(FlightEvent.FlightAdded.class,
-      // We update the current state...
-      evt -> new FlightState(Optional.of(new FlightInfo(evt.flightId, evt.callsign, evt.equipment, evt.departureIata, evt.arrivalIata, false)), Collections.emptySet()));
-
-    // ... we also change behaviour now we have a flight available.
+    // ... we change behaviour now we have a flight available.
     b.setEventHandlerChangingBehavior(FlightEvent.FlightAdded.class,
-      evt -> available(state()));
+      evt -> available(new FlightState(Optional.of(new FlightInfo(evt.flightId, evt.callsign, evt.equipment, evt.departureIata, evt.arrivalIata, false)), Collections.emptySet())));
 
     return b.build();
   }
@@ -79,19 +75,16 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
         evt -> ctx.reply(Done.getInstance())));
 
     b.setEventHandler(FlightEvent.PassengerRemoved.class,
-            evt -> state().withoutPassenger(evt.passengerId));
+        evt -> state().withoutPassenger(evt.passengerId));
 
     // And, finally, when the flight is closed... all ready to go...
     b.setCommandHandler(FlightCommand.CloseFlight.class, (cmd, ctx) ->
       ctx.thenPersist(new FlightEvent.FlightClosed(entityId()),
         evt -> ctx.reply(Done.getInstance())));
 
-    b.setEventHandler(FlightEvent.FlightClosed.class,
-      evt-> state().withDoorsClosed(true));
-
     // Closing the flight moves us into the 'closed' behaviour.
     b.setEventHandlerChangingBehavior(FlightEvent.FlightClosed.class,
-      evt -> closed(state()));
+      evt -> closed(state().withDoorsClosed(true)));
 
     return b.build();
   }
