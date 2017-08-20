@@ -30,7 +30,7 @@ public interface FlightService extends Service {
   /**
    * Example: curl http://localhost:9000/api/hello/Alice
    */
-  ServiceCall<Flight, FlightReply> addFlight();
+  ServiceCall<Flight, String> addFlight();
 
   ServiceCall<Passenger, Done> addPassenger();
 

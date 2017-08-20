@@ -34,7 +34,7 @@ public class FlightServiceImpl implements FlightService {
   }
 
   @Override
-  public ServiceCall<Flight, FlightReply> addFlight() {
+  public ServiceCall<Flight, String> addFlight() {
     return flight -> {
       AddFlight add = new AddFlight(flight.callsign, flight.equipment, flight.departureIata, flight.arrivalIata);
       return newEntityRef().ask(add);

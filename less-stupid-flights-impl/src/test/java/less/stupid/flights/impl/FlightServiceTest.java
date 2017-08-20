@@ -3,39 +3,51 @@
  */
 package less.stupid.flights.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
-import akka.Done;
 import less.stupid.flights.api.Flight;
-import less.stupid.flights.api.FlightReply;
 import less.stupid.flights.api.FlightService;
 import org.junit.Test;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.withServer;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class FlightServiceTest {
 
-//  @Test
-  public void shouldStorePersonalizedGreeting() throws Exception {
-    withServer(defaultSetup().withCassandra(true), server -> {
-      FlightService service = server.client(FlightService.class);
+  private static final String callsign  = "UA100";
+  private static final String equipment = "757-800";
+  private static final String departure = "EWR";
+  private static final String arrival   = "SFO";
 
-      Flight flight = new Flight("delicious ice-cream", "unknown", "NCL", "NYC");
+  private void withService(Consumer<FlightService> block) {
+    withServer(defaultSetup().withCassandra(true), server -> block.accept(server.client(FlightService.class)));
+  }
 
-      FlightReply addFlightResponse = service.addFlight().invoke(flight).toCompletableFuture().get(5, SECONDS);
-      assertThat(addFlightResponse).isNotNull().extracting("flightId").isNotEmpty();
+  private void withServiceAndFlight(BiConsumer<FlightService, String> block) {
+    withService(service -> {
+      try {
+        block.accept(service, service.addFlight()
+                                     .invoke(new Flight(callsign, equipment, departure, arrival))
+                                     .toCompletableFuture().get(5, SECONDS));
+      } catch (Exception e) {
+        fail("exception adding flight - {}", e.getMessage());
+      }
+    });
+  }
 
-      String flightId = addFlightResponse.flightId;
+  @Test
+  public void shouldAddFlight() {
+    withServiceAndFlight((service, reply) -> assertThat(reply).startsWith("OK"));
+  }
 
-      less.stupid.flights.api.Passenger passenger = new less.stupid.flights.api.Passenger(UUID.fromString(flightId), "Burton-McCreadie", "Trevor", "J", Optional.empty());
+  @Test
+  public void shouldAddPassenger() {
+    withServiceAndFlight((service, flight) -> {
 
-      Done addPassengerResponse = service.addPassenger().invoke(passenger).toCompletableFuture().get(5, SECONDS);
-      assertThat(addPassengerResponse).isNotNull();
     });
   }
 }

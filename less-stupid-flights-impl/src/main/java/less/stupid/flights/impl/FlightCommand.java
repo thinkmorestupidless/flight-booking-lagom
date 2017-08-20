@@ -28,7 +28,7 @@ public interface FlightCommand extends Jsonable {
 
   @Value
   @JsonDeserialize
-  final class AddFlight implements FlightCommand, CompressedJsonable, PersistentEntity.ReplyType<FlightReply> {
+  final class AddFlight implements FlightCommand, CompressedJsonable, PersistentEntity.ReplyType<String> {
 
     public final String callsign;
 
