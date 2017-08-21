@@ -10,6 +10,7 @@ import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.api.deser.PathParamSerializers;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static com.lightbend.lagom.javadsl.api.Service.named;
@@ -36,15 +37,18 @@ public interface FlightService extends Service {
 
   ServiceCall<NotUsed, String> closeFlight(UUID flightId);
 
+  ServiceCall<NotUsed, Set<FlightSummary>> getAllFlights();
+
   @Override
   default Descriptor descriptor() {
     // @formatter:off
     return named("flights").withCalls(
-        restCall(Method.POST, "/flights/add-flight", this::addFlight),
-        restCall(Method.POST, "/flights/add-passenger", this::addPassenger),
-        restCall(Method.POST, "/flights/select-seat", this::selectSeat),
-        restCall(Method.POST, "/flights/remove-passenger/flight-id/:flightId/passengerId/:passengerId", this::removePassenger),
-        restCall(Method.POST, "/flights/close-flight/flight-id/:flightId", this::closeFlight)
+        restCall(Method.GET, "/flights", this::getAllFlights),
+        restCall(Method.POST, "/flights", this::addFlight),
+        restCall(Method.POST, "/passengers", this::addPassenger),
+        restCall(Method.PUT, "/passengers", this::selectSeat),
+        restCall(Method.DELETE, "/passengers/:flightId/:passengerId", this::removePassenger),
+        restCall(Method.DELETE, "/flights/:flightId", this::closeFlight)
       ).withPathParamSerializer(UUID.class, PathParamSerializers.required("UUID", UUID::fromString, UUID::toString)
       ).withAutoAcl(true);
     // @formatter:on
