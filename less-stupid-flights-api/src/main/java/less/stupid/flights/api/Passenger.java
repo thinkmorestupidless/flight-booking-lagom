@@ -28,4 +28,8 @@ public class Passenger {
         this.initial        = Preconditions.checkNotNull(initial, "initial");
         this.seatAssignment = Preconditions.checkNotNull(seatAssignment, "seatAssignment");
     }
+
+    public Passenger withSeatAssignment(Optional<String> seatAssignment) {
+        return new Passenger(flightId, lastName, firstName, initial, seatAssignment);
+    }
 }

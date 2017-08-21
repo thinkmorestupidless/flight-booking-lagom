@@ -3,17 +3,13 @@
  */
 package less.stupid.flights.impl;
 
-import less.stupid.flights.api.FlightReply;
-import lombok.Value;
-
+import akka.Done;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.base.Preconditions;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
-
-import akka.Done;
+import lombok.Value;
 
 import java.util.Optional;
 
@@ -28,7 +24,7 @@ public interface FlightCommand extends Jsonable {
 
   @Value
   @JsonDeserialize
-  final class AddFlight implements FlightCommand, CompressedJsonable, PersistentEntity.ReplyType<FlightReply> {
+  final class AddFlight implements FlightCommand, CompressedJsonable, PersistentEntity.ReplyType<String> {
 
     public final String callsign;
 
@@ -49,7 +45,7 @@ public interface FlightCommand extends Jsonable {
 
   @Value
   @JsonDeserialize
-  final class AddPassenger implements FlightCommand, PersistentEntity.ReplyType<FlightReply> {
+  final class AddPassenger implements FlightCommand, PersistentEntity.ReplyType<String> {
 
     public final String passengerId;
 
@@ -102,6 +98,12 @@ public interface FlightCommand extends Jsonable {
   @JsonDeserialize
   final class CloseFlight implements FlightCommand, PersistentEntity.ReplyType<Done> {
 
+    public final String flightId;
+
+    @JsonCreator
+    public CloseFlight(String flightId) {
+      this.flightId = flightId;
+    }
   }
 
 }
