@@ -3,21 +3,17 @@
  */
 package less.stupid.flights.api;
 
-import static com.lightbend.lagom.javadsl.api.Service.named;
-import static com.lightbend.lagom.javadsl.api.Service.restCall;
-import static com.lightbend.lagom.javadsl.api.Service.topic;
-
-import akka.Done;
 import akka.NotUsed;
 import com.lightbend.lagom.javadsl.api.Descriptor;
 import com.lightbend.lagom.javadsl.api.Service;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
-import com.lightbend.lagom.javadsl.api.broker.Topic;
-import com.lightbend.lagom.javadsl.api.broker.kafka.KafkaProperties;
 import com.lightbend.lagom.javadsl.api.deser.PathParamSerializers;
 import com.lightbend.lagom.javadsl.api.transport.Method;
 
 import java.util.UUID;
+
+import static com.lightbend.lagom.javadsl.api.Service.named;
+import static com.lightbend.lagom.javadsl.api.Service.restCall;
 
 /**
  * The lessstupidflights service interface.
@@ -34,11 +30,11 @@ public interface FlightService extends Service {
 
   ServiceCall<Passenger, String> addPassenger();
 
-  ServiceCall<SelectSeat, Done> selectSeat();
+  ServiceCall<SelectSeat, String> selectSeat();
 
-  ServiceCall<NotUsed, Done> removePassenger(UUID flightId, UUID passengerId);
+  ServiceCall<NotUsed, String> removePassenger(UUID flightId, UUID passengerId);
 
-  ServiceCall<NotUsed, Done> closeFlight(UUID flightId);
+  ServiceCall<NotUsed, String> closeFlight(UUID flightId);
 
   @Override
   default Descriptor descriptor() {

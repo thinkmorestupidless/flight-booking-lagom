@@ -3,15 +3,13 @@
  */
 package less.stupid.flights.impl;
 
-import lombok.Value;
-
+import akka.Done;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
-
-import akka.Done;
+import lombok.Value;
 
 import java.util.Optional;
 

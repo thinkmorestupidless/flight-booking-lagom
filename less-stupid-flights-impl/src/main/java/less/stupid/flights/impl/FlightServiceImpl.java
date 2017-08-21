@@ -3,13 +3,14 @@
  */
 package less.stupid.flights.impl;
 
-import akka.Done;
 import akka.NotUsed;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRef;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntityRegistry;
-import less.stupid.flights.api.*;
+import less.stupid.flights.api.Flight;
+import less.stupid.flights.api.FlightService;
 import less.stupid.flights.api.Passenger;
+import less.stupid.flights.api.SelectSeat;
 import less.stupid.flights.impl.FlightCommand.AddFlight;
 import less.stupid.flights.impl.FlightCommand.AddPassenger;
 
@@ -50,26 +51,26 @@ public class FlightServiceImpl implements FlightService {
   }
 
   @Override
-  public ServiceCall<SelectSeat, Done> selectSeat() {
+  public ServiceCall<SelectSeat, String> selectSeat() {
     return seat -> {
       PersistentEntityRef<FlightCommand> ref = persistentEntityRegistry.refFor(FlightEntity.class, seat.flightId.toString());
-      return ref.ask(new FlightCommand.SelectSeat(seat.passengerId.toString(), seat.seatAssignment));
+      return ref.ask(new FlightCommand.SelectSeat(seat.passengerId.toString(), seat.seatAssignment)).thenApply($ -> "OK");
     };
   }
 
   @Override
-  public ServiceCall<NotUsed, Done> removePassenger(UUID flightId, UUID passengerId) {
+  public ServiceCall<NotUsed, String> removePassenger(UUID flightId, UUID passengerId) {
     return request -> {
       PersistentEntityRef<FlightCommand> ref = persistentEntityRegistry.refFor(FlightEntity.class, flightId.toString());
-      return ref.ask(new FlightCommand.RemovePassenger(passengerId.toString()));
+      return ref.ask(new FlightCommand.RemovePassenger(passengerId.toString())).thenApply($ -> "OK");
     };
   }
 
   @Override
-  public ServiceCall<NotUsed, Done> closeFlight(UUID flightId) {
+  public ServiceCall<NotUsed, String> closeFlight(UUID flightId) {
     return request -> {
       PersistentEntityRef<FlightCommand> ref = persistentEntityRegistry.refFor(FlightEntity.class, flightId.toString());
-      return ref.ask(new FlightCommand.CloseFlight(flightId.toString()));
+      return ref.ask(new FlightCommand.CloseFlight(flightId.toString())).thenApply($ -> "OK");
     };
   }
 }
