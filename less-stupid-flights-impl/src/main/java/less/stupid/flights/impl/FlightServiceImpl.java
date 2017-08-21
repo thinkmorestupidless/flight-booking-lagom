@@ -81,6 +81,6 @@ public class FlightServiceImpl implements FlightService {
 
   @Override
   public ServiceCall<NotUsed, Set<FlightSummary>> getAllFlights() {
-    return null;
+    return request -> repository.getAllFlights();
   }
 }

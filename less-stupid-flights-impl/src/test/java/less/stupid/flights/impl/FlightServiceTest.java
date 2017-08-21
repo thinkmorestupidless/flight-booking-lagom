@@ -3,13 +3,12 @@
  */
 package less.stupid.flights.impl;
 
-import less.stupid.flights.api.Flight;
-import less.stupid.flights.api.FlightService;
+import less.stupid.flights.api.*;
 import less.stupid.flights.api.Passenger;
-import less.stupid.flights.api.SelectSeat;
 import org.junit.Test;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -91,6 +90,22 @@ public class FlightServiceTest {
         assertThat(response).isEqualTo("OK");
       } catch (Exception e) {
         fail("problem closing flight - {}", e.getMessage());
+      }
+    });
+  }
+
+  @Test
+  public void shouldListAllFlights() {
+    withServiceAndFlightId((service, flightId) -> {
+      try {
+        Set<FlightSummary> response = service.getAllFlights()
+                                             .invoke()
+                                             .toCompletableFuture()
+                                             .get(5, SECONDS);
+
+        assertThat(response).hasSize(1).first().isEqualTo(new FlightSummary(flightId, callsign));
+      } catch (Exception e) {
+        fail("problem listing flights - {}", e.getMessage());
       }
     });
   }
