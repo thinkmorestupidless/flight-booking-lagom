@@ -5,7 +5,6 @@ package less.stupid.flights.impl;
 
 import akka.Done;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
-import less.stupid.flights.api.FlightReply;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -29,7 +28,7 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
       // The flight data is persisted...
       ctx.thenPersist(new FlightEvent.FlightAdded(entityId(), cmd.callsign, cmd.equipment, cmd.departureIata, cmd.arrivalIata),
         // When persist is complete we reply...
-        evt -> ctx.reply(String.format("OK:", entityId()))));
+        evt -> ctx.reply(String.format("OK:%s", entityId()))));
 
     // When a flight is completely added...
     // ... we change behaviour now we have a flight available.
@@ -47,7 +46,7 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
       // The passenger data is persisted...
       ctx.thenPersist(new FlightEvent.PassengerAdded(entityId(), cmd.passengerId, cmd.lastName, cmd.firstName, cmd.initial, cmd.seatAssignment),
         // When persist is complete we reply...
-        evt -> ctx.reply(Done.getInstance())));
+        evt -> ctx.reply(String.format("OK:%s", cmd.passengerId))));
 
     b.setEventHandler(FlightEvent.PassengerAdded.class,
       evt -> state().withPassenger(new Passenger(evt.passengerId, evt.lastName, evt.firstName, evt.initial, evt.seatAssignment)));

@@ -3,12 +3,10 @@
  */
 package less.stupid.flights.impl;
 
-import less.stupid.flights.api.FlightReply;
 import lombok.Value;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.base.Preconditions;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
 import com.lightbend.lagom.serialization.CompressedJsonable;
 import com.lightbend.lagom.serialization.Jsonable;
@@ -49,7 +47,7 @@ public interface FlightCommand extends Jsonable {
 
   @Value
   @JsonDeserialize
-  final class AddPassenger implements FlightCommand, PersistentEntity.ReplyType<Done> {
+  final class AddPassenger implements FlightCommand, PersistentEntity.ReplyType<String> {
 
     public final String passengerId;
 

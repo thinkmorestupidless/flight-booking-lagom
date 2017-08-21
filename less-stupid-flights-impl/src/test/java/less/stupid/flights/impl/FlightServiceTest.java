@@ -5,8 +5,11 @@ package less.stupid.flights.impl;
 
 import less.stupid.flights.api.Flight;
 import less.stupid.flights.api.FlightService;
+import less.stupid.flights.api.Passenger;
 import org.junit.Test;
 
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -39,6 +42,26 @@ public class FlightServiceTest {
     });
   }
 
+  private void withServiceAndFlightId(BiConsumer<FlightService, UUID> block) {
+    withServiceAndFlight((service, flight) -> {
+      block.accept(service, UUID.fromString(flight.split(":")[1]));
+    });
+  }
+
+  private void withServiceFlightAndPassenger(Consumer<ServiceFlightAndPassenger> block) {
+    withServiceAndFlightId((service, flightId) -> {
+      try {
+        String response = service.addPassenger()
+                                 .invoke(new Passenger(flightId, "Walsh", "Sean", "A", Optional.of("1A")))
+                                 .toCompletableFuture().get(5, SECONDS);
+
+        block.accept(new ServiceFlightAndPassenger(service, flightId, UUID.fromString(response.split(":")[1])));
+      } catch (Exception e) {
+        fail("exception adding passenger - {}", e.getMessage());
+      }
+    });
+  }
+
   @Test
   public void shouldAddFlight() {
     withServiceAndFlight((service, reply) -> assertThat(reply).startsWith("OK"));
@@ -46,8 +69,42 @@ public class FlightServiceTest {
 
   @Test
   public void shouldAddPassenger() {
-    withServiceAndFlight((service, flight) -> {
+    withServiceAndFlightId((service, flightId) -> {
+      try {
+        String response = service.addPassenger()
+                                 .invoke(new Passenger(flightId, "Walsh", "Sean", "A", Optional.of("1A")))
+                                 .toCompletableFuture().get(5, SECONDS);
 
+        assertThat(response).startsWith("OK");
+      } catch (Exception e) {
+        fail("exception adding passenger - {}", e.getMessage());
+      }
     });
+  }
+
+  @Test
+  public void shouldRemovePassenger() {
+    withServiceFlightAndPassenger(sfp -> {
+      try {
+        sfp.service.removePassenger(sfp.flightId, sfp.passengerId).invoke().toCompletableFuture().get(5, SECONDS);
+      } catch (Exception e) {
+        fail("exception removing passenger - {}", e.getMessage());
+      }
+    });
+  }
+
+  private class ServiceFlightAndPassenger {
+
+    public final FlightService service;
+
+    public final UUID flightId;
+
+    public final UUID passengerId;
+
+    public ServiceFlightAndPassenger(FlightService service, UUID flightId, UUID passengerId) {
+      this.service = service;
+      this.flightId = flightId;
+      this.passengerId = passengerId;
+    }
   }
 }
