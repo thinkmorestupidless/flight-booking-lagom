@@ -17,7 +17,6 @@ import javax.inject.Singleton;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
@@ -78,7 +77,7 @@ public class FlightRepository {
                             "flightId UUID," +
                             "callSign text," +
                             "PRIMARY KEY (flightId)" +
-                            ")"
+                          ")"
             );
         }
 

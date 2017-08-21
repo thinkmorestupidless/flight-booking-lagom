@@ -4,21 +4,21 @@ import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver;
 import com.lightbend.lagom.javadsl.testkit.PersistentEntityTestDriver.Outcome;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public class FlightEntityTest {
 
   private static ActorSystem system;
+
+  private PersistentEntityTestDriver<FlightCommand, FlightEvent, FlightState> driver;
 
   private static final UUID flightId          = UUID.randomUUID();
   private static final String DateTimePattern = "yyyy-MM-dd HH:mm:ss";
@@ -42,12 +42,21 @@ public class FlightEntityTest {
     system = null;
   }
 
-  private void withDriver(Consumer<PersistentEntityTestDriver<FlightCommand, FlightEvent, FlightState>> block) {
-    block.accept(new PersistentEntityTestDriver<>(system, new FlightEntity(), flightId.toString()));
+  @Before
+  public void createTestDriver() {
+    driver = new PersistentEntityTestDriver<>(system, new FlightEntity(), flightId.toString());
+  }
+
+  @After
+  public void noIssues() {
+    if (!driver.getAllIssues().isEmpty()) {
+      driver.getAllIssues().forEach(System.out::println);
+      fail("There were issues " + driver.getAllIssues().get(0));
+    }
   }
 
   private void withDriverAndFlight(BiConsumer<PersistentEntityTestDriver<FlightCommand, FlightEvent, FlightState>, Outcome<FlightEvent, FlightState>> block) {
-    withDriver(driver -> block.accept(driver, driver.run(new FlightCommand.AddFlight(callsign, equipment, departure, arrival))));
+    block.accept(driver, driver.run(new FlightCommand.AddFlight(callsign, equipment, departure, arrival)));
   }
 
   @Test
