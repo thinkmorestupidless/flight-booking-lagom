@@ -74,7 +74,7 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
         evt -> ctx.reply(Done.getInstance())));
 
     b.setEventHandler(FlightEvent.PassengerRemoved.class,
-        evt -> state().withoutPassenger(evt.passengerId));
+      evt -> state().withoutPassenger(evt.passengerId));
 
     // And, finally, when the flight is closed... all ready to go...
     b.setCommandHandler(FlightCommand.CloseFlight.class, (cmd, ctx) ->
@@ -93,11 +93,11 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
 
     // When can still march a passenger off the flight after it's closed.
     b.setCommandHandler(FlightCommand.RemovePassenger.class, (cmd, ctx) ->
-            ctx.thenPersist(new FlightEvent.PassengerRemoved(entityId(), cmd.passengerId),
-                    evt -> ctx.reply(Done.getInstance())));
+      ctx.thenPersist(new FlightEvent.PassengerRemoved(entityId(), cmd.passengerId),
+        evt -> ctx.reply(Done.getInstance())));
 
     b.setEventHandler(FlightEvent.PassengerRemoved.class,
-            evt -> state().withoutPassenger(evt.passengerId));
+      evt -> state().withoutPassenger(evt.passengerId));
 
     return b.build();
   }

@@ -1,4 +1,4 @@
-package less.stupid.flights.impl;
+package less.stupid.utils;
 
 import akka.Done;
 import akka.stream.javadsl.Flow;

@@ -1,4 +1,4 @@
-package less.stupid.flights.impl;
+package less.stupid.flights.utils;
 
 import akka.Done;
 

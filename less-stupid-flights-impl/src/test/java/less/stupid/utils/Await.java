@@ -1,4 +1,4 @@
-package less.stupid.flights.impl;
+package less.stupid.utils;
 
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -21,7 +21,7 @@ public class Await {
      * @param <T> the type of the expected value.
      * @return the result of the completed <code>completionStage</code>.
      */
-    public static <T> T result(CompletionStage<T> completionStage) {
+    public static <T> T await(CompletionStage<T> completionStage) {
         try {
             return completionStage.toCompletableFuture().get(5, SECONDS);
         } catch (ExecutionException e) {

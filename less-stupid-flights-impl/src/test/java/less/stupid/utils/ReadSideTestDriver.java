@@ -1,4 +1,4 @@
-package less.stupid.flights.impl;
+package less.stupid.utils;
 
 import akka.Done;
 import akka.japi.Pair;
@@ -10,6 +10,7 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.lightbend.lagom.javadsl.persistence.*;
 import com.lightbend.lagom.javadsl.persistence.ReadSideProcessor.ReadSideHandler;
+import less.stupid.flights.utils.CompletionStageUtils;
 import org.pcollections.PSequence;
 
 import javax.inject.Inject;
@@ -59,6 +60,7 @@ public class ReadSideTestDriver implements ReadSide {
     try {
       processorInit.toCompletableFuture().get(30, SECONDS);
     } catch (Exception e) {
+      System.out.println("------------------------------------  " + e.getMessage());
       throw new RuntimeException("Couldn't register the processor on the testkit.", e);
     }
 

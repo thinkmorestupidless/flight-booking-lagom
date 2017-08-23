@@ -10,6 +10,7 @@ import com.lightbend.lagom.javadsl.persistence.ReadSideProcessor;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide;
 import com.lightbend.lagom.javadsl.persistence.cassandra.CassandraSession;
 import less.stupid.flights.api.FlightSummary;
+import less.stupid.flights.utils.CompletionStageUtils;
 import org.pcollections.PSequence;
 
 import javax.inject.Inject;
@@ -20,7 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
-import static com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide.completedStatements;
+import static com.lightbend.lagom.javadsl.persistence.cassandra.CassandraReadSide.completedStatement;
 
 @Singleton
 public class FlightRepository {
@@ -82,6 +83,7 @@ public class FlightRepository {
         }
 
         private CompletionStage<Done> prepareStatements() {
+
             return CompletionStageUtils.doAll(
 
                         session.prepare(
@@ -101,11 +103,11 @@ public class FlightRepository {
         }
 
         private CompletionStage<List<BoundStatement>> insertFlight(UUID flightId, String callsign) {
-            return completedStatements(insertFlightStatement.bind(flightId, callsign));
+            return completedStatement(insertFlightStatement.bind(flightId, callsign));
         }
 
         private CompletionStage<List<BoundStatement>> deleteFlight(UUID flightId) {
-            return completedStatements(deleteFlightStatement.bind(flightId));
+            return completedStatement(deleteFlightStatement.bind(flightId));
         }
 
         @Override

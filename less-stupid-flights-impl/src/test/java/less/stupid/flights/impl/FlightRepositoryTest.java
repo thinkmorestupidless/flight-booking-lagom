@@ -5,6 +5,8 @@ import com.lightbend.lagom.javadsl.persistence.Offset;
 import com.lightbend.lagom.javadsl.persistence.ReadSide;
 import com.lightbend.lagom.javadsl.testkit.ServiceTest;
 import less.stupid.flights.api.FlightSummary;
+import less.stupid.utils.DoNothingTopicFactory;
+import less.stupid.utils.ReadSideTestDriver;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.bind;
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.defaultSetup;
+import static less.stupid.utils.Await.await;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FlightRepositoryTest {
@@ -32,7 +35,7 @@ public class FlightRepositoryTest {
                     // a 1 node cluster so this delay is not necessary.
                     b.configure("cassandra-query-journal.eventual-consistency-delay", "0")
                             .overrides(bind(ReadSide.class).to(ReadSideTestDriver.class),
-                                    bind(TopicFactory.class).to(DoNothingTopicFactory.class))
+                                       bind(TopicFactory.class).to(DoNothingTopicFactory.class))
             );
 
     private static ServiceTest.TestServer testServer;
@@ -66,12 +69,12 @@ public class FlightRepositoryTest {
         feed(new FlightEvent.FlightAdded(flight2.toString(), "UA101", equipment, departure, arrival));
         feed(new FlightEvent.FlightAdded(flight3.toString(), "UA202", equipment, departure, arrival));
 
-        Set<FlightSummary> flights = Await.result(flightRepository.getAllFlights());
+        Set<FlightSummary> flights = await(flightRepository.getAllFlights());
 
         assertThat(flights).hasSize(3).containsOnly(new FlightSummary(flight1, "UA100"), new FlightSummary(flight2, "UA101"), new FlightSummary(flight3, "UA202"));
     }
 
     private void feed(FlightEvent flightEvent) throws InterruptedException, ExecutionException, TimeoutException {
-        Await.result(testDriver.feed(flightEvent, Offset.sequence(offset.getAndIncrement())));
+        await(testDriver.feed(flightEvent, Offset.sequence(offset.getAndIncrement())));
     }
 }

@@ -14,5 +14,6 @@ public class FlightModule extends AbstractModule implements ServiceGuiceSupport 
   @Override
   protected void configure() {
     bindService(FlightService.class, FlightServiceImpl.class);
+    bind(FlightRepository.class);
   }
 }
