@@ -4,6 +4,8 @@ version in ThisBuild := "1.0-SNAPSHOT"
 // the Scala version that will be used for cross-compiled libraries
 scalaVersion in ThisBuild := "2.11.8"
 
+EclipseKeys.projectFlavor in Global := EclipseProjectFlavor.Java
+
 lazy val `less-stupid-flights` = (project in file("."))
   .aggregate(`less-stupid-flights-api`, `less-stupid-flights-impl`)
 
@@ -39,4 +41,6 @@ val faker = "com.github.javafaker" % "javafaker" % "0.13"
 def common = Seq(
   javacOptions in compile += "-parameters"
 )
+
+lagomCassandraCleanOnStart in ThisBuild := false
 
