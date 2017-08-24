@@ -5,7 +5,6 @@ package less.stupid.flights.impl;
 
 import akka.Done;
 import com.lightbend.lagom.javadsl.persistence.PersistentEntity;
-import less.stupid.flights.api.FlightReply;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -29,16 +28,12 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
       // The flight data is persisted...
       ctx.thenPersist(new FlightEvent.FlightAdded(entityId(), cmd.callsign, cmd.equipment, cmd.departureIata, cmd.arrivalIata),
         // When persist is complete we reply...
-        evt -> ctx.reply(new FlightReply(String.format("OK:%s", entityId())))));
+        evt -> ctx.reply(String.format("OK:%s", entityId()))));
 
     // When a flight is completely added...
-    b.setEventHandler(FlightEvent.FlightAdded.class,
-      // We update the current state...
-      evt -> new FlightState(Optional.of(new FlightInfo(evt.flightId, evt.callsign, evt.equipment, evt.departureIata, evt.arrivalIata, false)), Collections.emptySet()));
-
-    // ... we also change behaviour now we have a flight available.
+    // ... we change behaviour now we have a flight available.
     b.setEventHandlerChangingBehavior(FlightEvent.FlightAdded.class,
-      evt -> available(state()));
+      evt -> available(new FlightState(Optional.of(new FlightInfo(evt.flightId, evt.callsign, evt.equipment, evt.departureIata, evt.arrivalIata, false)), Collections.emptySet())));
 
     return b.build();
   }
@@ -51,7 +46,7 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
       // The passenger data is persisted...
       ctx.thenPersist(new FlightEvent.PassengerAdded(entityId(), cmd.passengerId, cmd.lastName, cmd.firstName, cmd.initial, cmd.seatAssignment),
         // When persist is complete we reply...
-        evt -> ctx.reply(new FlightReply(String.format("OK:%s", cmd.passengerId)))));
+        evt -> ctx.reply(String.format("OK:%s", cmd.passengerId))));
 
     b.setEventHandler(FlightEvent.PassengerAdded.class,
       evt -> state().withPassenger(new Passenger(evt.passengerId, evt.lastName, evt.firstName, evt.initial, evt.seatAssignment)));
@@ -79,19 +74,16 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
         evt -> ctx.reply(Done.getInstance())));
 
     b.setEventHandler(FlightEvent.PassengerRemoved.class,
-            evt -> state().withoutPassenger(evt.passengerId));
+      evt -> state().withoutPassenger(evt.passengerId));
 
     // And, finally, when the flight is closed... all ready to go...
     b.setCommandHandler(FlightCommand.CloseFlight.class, (cmd, ctx) ->
       ctx.thenPersist(new FlightEvent.FlightClosed(entityId()),
         evt -> ctx.reply(Done.getInstance())));
 
-    b.setEventHandler(FlightEvent.FlightClosed.class,
-      evt-> state().withDoorsClosed(true));
-
     // Closing the flight moves us into the 'closed' behaviour.
     b.setEventHandlerChangingBehavior(FlightEvent.FlightClosed.class,
-      evt -> closed(state()));
+      evt -> closed(state().withDoorsClosed(true)));
 
     return b.build();
   }
@@ -101,11 +93,11 @@ public class FlightEntity extends PersistentEntity<FlightCommand, FlightEvent, F
 
     // When can still march a passenger off the flight after it's closed.
     b.setCommandHandler(FlightCommand.RemovePassenger.class, (cmd, ctx) ->
-            ctx.thenPersist(new FlightEvent.PassengerRemoved(entityId(), cmd.passengerId),
-                    evt -> ctx.reply(Done.getInstance())));
+      ctx.thenPersist(new FlightEvent.PassengerRemoved(entityId(), cmd.passengerId),
+        evt -> ctx.reply(Done.getInstance())));
 
     b.setEventHandler(FlightEvent.PassengerRemoved.class,
-            evt -> state().withoutPassenger(evt.passengerId));
+      evt -> state().withoutPassenger(evt.passengerId));
 
     return b.build();
   }
